@@ -1,0 +1,59 @@
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const User = require("../models/user.model");
+
+const JWT_SECRET = process.env.JWT_SECRET;
+
+exports.register = async (email, password, firstName, lastName, phone) => {
+  const existing = await User.findOne({ email });
+
+  if (existing) {
+    throw new Error("User already exists");
+  }
+
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  const user = await User.create({
+    email,
+    password: hashedPassword,
+    firstName,
+    lastName,
+    phone
+  });
+
+  return {
+    id: user._id,
+    email: user.email,
+    firstName: user.firstName,
+    lastName: user.lastName,
+    role: user.role
+  };
+};
+
+exports.login = async (email, password) => {
+  const user = await User.findOne({ email }).select("+password");
+
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  const valid = await bcrypt.compare(password, user.password);
+
+  if (!valid) {
+    throw new Error("Invalid password");
+  }
+
+  const token = jwt.sign(
+    {
+      id: user._id,
+      email: user.email,
+      role: user.role
+    },
+    JWT_SECRET,
+    {
+      expiresIn: "1h",
+    }
+  );
+
+  return { token };
+};
