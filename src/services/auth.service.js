@@ -2,8 +2,6 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/user.model");
 
-const JWT_SECRET = process.env.JWT_SECRET;
-
 exports.register = async (email, password, firstName, lastName, phone) => {
   const existing = await User.findOne({ email });
 
@@ -49,7 +47,7 @@ exports.login = async (email, password) => {
       email: user.email,
       role: user.role
     },
-    JWT_SECRET,
+    process.env.JWT_SECRET,
     {
       expiresIn: "1h",
     }
