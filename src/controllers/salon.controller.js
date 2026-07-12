@@ -62,3 +62,22 @@ exports.deletePrestation = async (req, res) => {
     res.status(404).json({ error: err.message });
   }
 };
+
+exports.uploadPhoto = async (req, res) => {
+  try {
+    if (!req.file) throw new Error("Aucune image fournie");
+    const salon = await salonService.uploadPhoto(req.params.id, req.file.buffer, req.file.mimetype);
+    res.status(201).json(salon);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+};
+
+exports.deletePhoto = async (req, res) => {
+  try {
+    const salon = await salonService.deletePhoto(req.params.id, req.params.publicId);
+    res.json(salon);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+};

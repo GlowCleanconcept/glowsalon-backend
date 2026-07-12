@@ -4,7 +4,7 @@ const prestationSchema = new mongoose.Schema({
   nom: { type: String, required: true, trim: true },
   description: { type: String, trim: true },
   prix: { type: Number, required: true, min: 0 },
-  duree: { type: Number, required: true, min: 0 } // en minutes
+  duree: { type: Number, required: true, min: 0 }
 });
 
 const horaireSchema = new mongoose.Schema({
@@ -16,6 +16,11 @@ const horaireSchema = new mongoose.Schema({
   ouvert: { type: Boolean, default: true },
   ouverture: { type: String, default: "09:00" },
   fermeture: { type: String, default: "18:00" }
+});
+
+const photoSchema = new mongoose.Schema({
+  url: { type: String, required: true },
+  publicId: { type: String, required: true }
 });
 
 const salonSchema = new mongoose.Schema(
@@ -37,6 +42,7 @@ const salonSchema = new mongoose.Schema(
     },
     prestations: [prestationSchema],
     horaires: [horaireSchema],
+    photos: [photoSchema],
     isActive: { type: Boolean, default: true }
   },
   { timestamps: true }
