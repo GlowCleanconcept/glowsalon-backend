@@ -8,6 +8,7 @@ const salonRoutes = require("./salon.routes");
 const rendezvousRoutes = require("./rendezvous.routes");
 const paiementRoutes = require("./paiement.routes");
 const notificationRoutes = require("./notification.routes");
+const avisRoutes = require("./avis.routes");
 const auth = require("../middleware/auth.middleware");
 
 router.get("/health", healthCheck);
@@ -29,6 +30,9 @@ router.use("/paiements", paiementRoutes);
 
 // NOTIFICATIONS
 router.use("/notifications", notificationRoutes);
+
+// AVIS
+router.use("/avis", avisRoutes);
 
 // Route protégée
 router.get("/profile", auth.protect, (req, res) => {
