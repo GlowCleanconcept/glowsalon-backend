@@ -1,6 +1,7 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/user.model");
+const { sendBienvenue } = require("./email.service");
 
 exports.register = async (email, password, firstName, lastName, phone) => {
   const existing = await User.findOne({ email });
@@ -15,6 +16,9 @@ exports.register = async (email, password, firstName, lastName, phone) => {
     lastName,
     phone
   });
+
+  // Email de bienvenue (non bloquant)
+  sendBienvenue(user).catch(err => console.error("Email bienvenue:", err.message));
 
   return {
     id: user._id,

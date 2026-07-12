@@ -1,6 +1,8 @@
 const Rendezvous = require("../models/rendezvous.model");
 const Salon = require("../models/salon.model");
+const User = require("../models/user.model");
 const { creerNotification } = require("./notification.service");
+const { sendConfirmationRdv } = require("./email.service");
 
 exports.createRendezvous = async (clientId, data) => {
   const { salonId, prestationId, coiffeurId, date, notes } = data;
@@ -63,7 +65,7 @@ exports.updateStatut = async (id, statut) => {
     id,
     { statut },
     { new: true, runValidators: true }
-  ).populate("client", "firstName");
+  ).populate("client", "firstName lastName email");
   if (!rdv) throw new Error("Rendez-vous introuvable");
 
   const messages = {
@@ -91,6 +93,11 @@ exports.updateStatut = async (id, statut) => {
       messages[statut].message,
       messages[statut].type
     );
+  }
+
+  // Email de confirmation
+  if (statut === "confirme" && rdv.client?.email) {
+    sendConfirmationRdv(rdv.client, rdv).catch(err => console.error("Email confirmation:", err.message));
   }
 
   return rdv;
