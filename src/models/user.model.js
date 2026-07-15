@@ -7,13 +7,11 @@ const userSchema = new mongoose.Schema(
       required: true,
       trim: true
     },
-
     lastName: {
       type: String,
       required: true,
       trim: true
     },
-
     email: {
       type: String,
       required: true,
@@ -22,25 +20,26 @@ const userSchema = new mongoose.Schema(
       trim: true,
       match: [/^\S+@\S+\.\S+$/, "Email invalide"]
     },
-
     password: {
       type: String,
       required: true,
       minlength: 6,
       select: false
     },
-
     phone: {
       type: String,
       trim: true
     },
-
     role: {
       type: String,
-      enum: ["client", "coiffeur", "admin"],
+      enum: ["client", "coiffeur", "admin", "superadmin"],
       default: "client"
     },
-
+    salon: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Salon",
+      default: null
+    },
     isActive: {
       type: Boolean,
       default: true

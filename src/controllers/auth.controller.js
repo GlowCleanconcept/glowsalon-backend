@@ -10,6 +10,15 @@ exports.register = async (req, res) => {
   }
 };
 
+exports.registerCoiffeur = async (req, res) => {
+  try {
+    const result = await authService.registerCoiffeur(req.body);
+    res.status(201).json({ message: "Salon créé avec succès", result });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+};
+
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;

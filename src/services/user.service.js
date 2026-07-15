@@ -1,7 +1,12 @@
 const User = require("../models/user.model");
 
-exports.getAllUsers = async () => {
-  return await User.find().select("-__v");
+exports.getAllUsers = async (salonId, role) => {
+  // Superadmin voit tous les utilisateurs
+  if (role === "superadmin") {
+    return await User.find().select("-__v");
+  }
+  // Admin voit uniquement les utilisateurs de son salon
+  return await User.find({ salon: salonId }).select("-__v");
 };
 
 exports.getUserById = async (id) => {

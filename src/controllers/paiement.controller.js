@@ -5,7 +5,6 @@ exports.createPaiement = async (req, res) => {
     const paiement = await paiementService.createPaiement(req.user.id, req.body);
     res.status(201).json(paiement);
   } catch (err) {
-    console.error("ERREUR PAIEMENT:", err);
     res.status(400).json({ error: err.message });
   }
 };
@@ -21,7 +20,7 @@ exports.getMyPaiements = async (req, res) => {
 
 exports.getAllPaiements = async (req, res) => {
   try {
-    const paiements = await paiementService.getAllPaiements();
+    const paiements = await paiementService.getAllPaiements(req.user.salon, req.user.role);
     res.json(paiements);
   } catch (err) {
     res.status(500).json({ error: err.message });

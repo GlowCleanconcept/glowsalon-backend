@@ -2,7 +2,7 @@ const userService = require("../services/user.service");
 
 exports.getAllUsers = async (req, res) => {
   try {
-    const users = await userService.getAllUsers();
+    const users = await userService.getAllUsers(req.user.salon, req.user.role);
     res.json(users);
   } catch (err) {
     res.status(500).json({ error: err.message });

@@ -1,6 +1,5 @@
 const Rendezvous = require("../models/rendezvous.model");
 const Salon = require("../models/salon.model");
-const User = require("../models/user.model");
 const { creerNotification } = require("./notification.service");
 const { sendConfirmationRdv } = require("./email.service");
 
@@ -43,8 +42,9 @@ exports.getMyRendezvous = async (userId) => {
     .sort({ date: -1 });
 };
 
-exports.getAllRendezvous = async () => {
-  return await Rendezvous.find()
+exports.getAllRendezvous = async (salonId, role) => {
+  const filter = role === "superadmin" ? {} : { salon: salonId };
+  return await Rendezvous.find(filter)
     .populate("client", "firstName lastName email")
     .populate("salon", "nom adresse")
     .populate("coiffeur", "firstName lastName")
@@ -95,7 +95,6 @@ exports.updateStatut = async (id, statut) => {
     );
   }
 
-  // Email de confirmation
   if (statut === "confirme" && rdv.client?.email) {
     sendConfirmationRdv(rdv.client, rdv).catch(err => console.error("Email confirmation:", err.message));
   }

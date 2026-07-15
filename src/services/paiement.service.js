@@ -34,8 +34,9 @@ exports.getMyPaiements = async (clientId) => {
     .sort({ createdAt: -1 });
 };
 
-exports.getAllPaiements = async () => {
-  return await Paiement.find()
+exports.getAllPaiements = async (salonId, role) => {
+  const filter = role === "superadmin" ? {} : { salon: salonId };
+  return await Paiement.find(filter)
     .populate("client", "firstName lastName email")
     .populate("rendezvous", "date prestation statut")
     .populate("salon", "nom")

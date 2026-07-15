@@ -20,7 +20,7 @@ exports.getMyRendezvous = async (req, res) => {
 
 exports.getAllRendezvous = async (req, res) => {
   try {
-    const rdvs = await rendezvousService.getAllRendezvous();
+    const rdvs = await rendezvousService.getAllRendezvous(req.user.salon, req.user.role);
     res.json(rdvs);
   } catch (err) {
     res.status(500).json({ error: err.message });

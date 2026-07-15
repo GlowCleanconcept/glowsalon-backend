@@ -6,6 +6,7 @@ const { validate } = require("../middleware/validate.middleware");
 const { protect } = require("../middleware/auth.middleware");
 
 router.post("/register", registerValidator, validate, authController.register);
+router.post("/register-salon", authController.registerCoiffeur);
 router.post("/login", loginValidator, validate, authController.login);
 router.get("/me", protect, authController.me);
 
