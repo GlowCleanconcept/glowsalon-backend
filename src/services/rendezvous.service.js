@@ -1,7 +1,9 @@
 const Rendezvous = require("../models/rendezvous.model");
 const Salon = require("../models/salon.model");
+const User = require("../models/user.model");
 const { creerNotification } = require("./notification.service");
 const { sendConfirmationRdv } = require("./email.service");
+const { sendPushNotification } = require("./push.service");
 
 exports.createRendezvous = async (clientId, data) => {
   const { salonId, prestationId, coiffeurId, date, notes } = data;
@@ -31,6 +33,16 @@ exports.createRendezvous = async (clientId, data) => {
     `Votre rendez-vous pour ${prestation.nom} le ${new Date(date).toLocaleDateString("fr-FR")} a été enregistré.`,
     "rendezvous"
   );
+
+  // Notification push
+  const client = await User.findById(clientId);
+  if (client?.pushToken) {
+    await sendPushNotification(
+      client.pushToken,
+      "Rendez-vous créé 📅",
+      `Votre rendez-vous pour ${prestation.nom} a été enregistré.`
+    );
+  }
 
   return rdv.populate(["client", "salon", "coiffeur"]);
 };
@@ -65,7 +77,7 @@ exports.updateStatut = async (id, statut) => {
     id,
     { statut },
     { new: true, runValidators: true }
-  ).populate("client", "firstName lastName email");
+  ).populate("client", "firstName lastName email pushToken");
   if (!rdv) throw new Error("Rendez-vous introuvable");
 
   const messages = {
@@ -93,6 +105,16 @@ exports.updateStatut = async (id, statut) => {
       messages[statut].message,
       messages[statut].type
     );
+
+    // Notification push
+    const client = await User.findById(rdv.client._id);
+    if (client?.pushToken) {
+      await sendPushNotification(
+        client.pushToken,
+        messages[statut].titre,
+        messages[statut].message
+      );
+    }
   }
 
   if (statut === "confirme" && rdv.client?.email) {
@@ -116,6 +138,16 @@ exports.cancelRendezvous = async (id, userId) => {
     `Votre rendez-vous du ${new Date(rdv.date).toLocaleDateString("fr-FR")} a été annulé.`,
     "annulation"
   );
+
+  // Notification push
+  const client = await User.findById(userId);
+  if (client?.pushToken) {
+    await sendPushNotification(
+      client.pushToken,
+      "Rendez-vous annulé ❌",
+      `Votre rendez-vous du ${new Date(rdv.date).toLocaleDateString("fr-FR")} a été annulé.`
+    );
+  }
 
   return rdv;
 };

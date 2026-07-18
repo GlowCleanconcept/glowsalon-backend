@@ -1,4 +1,5 @@
 const userService = require("../services/user.service");
+const User = require("../models/user.model");
 
 exports.getAllUsers = async (req, res) => {
   try {
@@ -33,5 +34,16 @@ exports.deleteUser = async (req, res) => {
     res.json({ message: "Utilisateur supprimé" });
   } catch (err) {
     res.status(404).json({ error: err.message });
+  }
+};
+
+exports.savePushToken = async (req, res) => {
+  try {
+    const { pushToken } = req.body;
+    if (!pushToken) throw new Error("Token push manquant");
+    await User.findByIdAndUpdate(req.user.id, { pushToken });
+    res.json({ message: "Token push enregistré" });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
   }
 };
